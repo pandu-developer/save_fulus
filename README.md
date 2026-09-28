@@ -1,56 +1,56 @@
-# 💰 Pencatat Uang
+# Pencatat Uang
 
-Aplikasi pencatat keuangan pribadi (pemasukan & pengeluaran) berbasis **React Native (Expo)** + **TypeScript**. Data disimpan **lokal di HP** (AsyncStorage), tanpa internet, tanpa akun.
+Pencatat keuangan pribadi berbasis **React Native (Expo SDK 57)** + **TypeScript** + **Expo Router**. Dibuat untuk mencatat pemasukan & pengeluaran dengan cepat, mengatur budget bulanan, dan melihat kebiasaan belanja. Data disimpan **lokal di HP** — tanpa akun, tanpa server.
 
-## ✨ Fitur
+## Fitur
 
-- **Beranda** — total saldo, ringkasan pemasukan & pengeluaran bulan ini, dan transaksi terbaru.
-- **Tambah / Edit Transaksi** — pilih jenis (pemasukan/pengeluaran), nominal berformat Rupiah, 15 kategori berikon, tanggal, dan catatan.
-- **Transaksi** — daftar lengkap dikelompokkan per tanggal (Hari ini / Kemarin / tanggal), dengan filter dan saldo harian.
-- **Laporan** — ringkasan per bulan (bisa geser bulan) + rincian per kategori dengan bar persentase.
-- **🎯 Impian** — daftar barang yang ingin dibeli: tentukan nama, ikon, warna, dan target harga, lalu menabung sedikit demi sedikit (ada tombol nabung cepat + riwayat tabungan). Progres tiap impian tampil dengan bar & persentase.
-- **🌙 Mode gelap** — toggle terang/gelap di kanan atas Beranda; mengikuti sistem secara default, dan pilihannya tersimpan.
-- Hapus transaksi/impian lewat halaman edit.
+- **Beranda** — saldo sebagai angka utama, pemasukan & pengeluaran bulan ini, progres budget (dengan penanda "hari ini"), transaksi terbaru. Tombol mata untuk menyembunyikan nominal.
+- **Tambah transaksi** — keypad khusus Rupiah (ada tombol `000`), kategori terurut dari yang paling sering dipakai, catatan, tanggal (pilihan cepat + kalender), metode pembayaran (mengingat pilihan terakhir). Setelah simpan muncul snackbar dengan **Urungkan**.
+- **Transaksi** — jurnal per hari dengan total harian, pencarian (catatan, kategori, metode, atau nominal), filter periode/kategori/jenis.
+- **Budget** — budget bulanan total + per kategori dengan status **Aman / Mendekati batas / Melebihi budget**, daftar pengeluaran yang belum dianggarkan, dan **Impian** (target tabungan dengan perkiraan waktu tercapai).
+- **Statistik** — total pengeluaran vs periode yang sama bulan lalu, rata-rata harian, sorotan berbasis data, grafik laju kumulatif, per minggu, dan per kategori.
+- **Profil** — nama, saldo awal, target budget, kelola kategori & metode pembayaran, tema (Sistem/Terang/Gelap), sembunyikan nominal, pengingat harian, ekspor CSV, backup & pulihkan (JSON), data contoh.
 
-## 🚀 Cara Menjalankan
+## Menjalankan
 
-**Prasyarat:** [Node.js](https://nodejs.org) (sudah ada) dan aplikasi **Expo Go** di HP-mu ([Android](https://play.google.com/store/apps/details?id=host.exp.exponent) / [iOS](https://apps.apple.com/app/expo-go/id982107779)).
+Prasyarat: Node.js dan aplikasi **Expo Go** di HP ([Android](https://play.google.com/store/apps/details?id=host.exp.exponent) / [iOS](https://apps.apple.com/app/expo-go/id982107779)).
 
-1. Pasang dependency (sekali saja):
-   ```bash
-   npm install
-   ```
-2. Jalankan server pengembangan:
-   ```bash
-   npm start
-   ```
-3. Akan muncul **QR code** di terminal:
-   - **Android:** buka aplikasi Expo Go → "Scan QR code".
-   - **iOS:** buka **Kamera** bawaan → arahkan ke QR → ketuk notifikasi.
+```bash
+npm install
+```
 
-   Pastikan HP dan komputer berada di **jaringan Wi‑Fi yang sama**.
+```bash
+npm start
+```
 
-Ingin pakai emulator? `npm run android` (Android Studio) atau `npm run ios` (khusus macOS).
+Scan QR code dengan Expo Go (Android) atau Kamera (iOS). HP dan komputer harus di Wi‑Fi yang sama. Belum punya data? Ketuk **Coba dengan data contoh** di Beranda.
 
-## 🗂️ Struktur Proyek
+Pratinjau cepat di browser: `npm run web`. Pemeriksaan kode: `npx tsc --noEmit` dan `npm run lint`.
+
+## Struktur
 
 ```
-App.tsx                     # Navigasi utama (tab + modal tambah)
 src/
-  types.ts                  # Tipe data Transaction & Category
-  theme.ts                  # Warna, spacing, radius, bayangan
-  constants/categories.ts   # Daftar kategori + ikon + warna
-  utils/format.ts           # Format & parsing Rupiah
-  utils/date.ts             # Format tanggal Bahasa Indonesia
-  storage/storage.ts        # Baca/tulis AsyncStorage
-  context/                  # State transaksi (Context + hooks)
-  navigation/types.ts       # Tipe navigasi
-  components/                # Item transaksi, FAB, empty state, dll.
-  screens/                  # Beranda, Transaksi, Laporan, Tambah/Edit
+  app/                    # Rute Expo Router (setiap file = layar)
+    _layout.tsx           # Root: font, data, tema, toast, stack
+    (tabs)/               # Beranda, Transaksi, Budget, Statistik, Profil
+    tambah.tsx            # Tambah/ubah transaksi (modal)
+    kategori*.tsx, metode.tsx, impian/
+  components/             # Komponen domain (baris transaksi, keypad, sheet, chart)
+    ui/                   # Primitif: Txt, Button, Chip, Sheet, Toast, Meter, dll.
+  data/                   # Tipe, store + persistensi, selector, insight, data contoh, backup
+  lib/                    # Format Rupiah & tanggal Indonesia, haptics, file, pengingat
+  theme/                  # Token warna (terang/gelap), tipografi, spacing
 ```
 
-## 📝 Catatan
+## Catatan desain
 
-- Semua data tersimpan **hanya di perangkat ini**. Menghapus aplikasi = menghapus data. (Bisa dikembangkan ke backup cloud nanti.)
-- Mata uang: Rupiah (Rp), format Indonesia.
+- Satu keluarga font (**Plus Jakarta Sans**), tiga bobot, enam ukuran.
+- Palet tenang: off-white hangat & charcoal, satu aksen indigo. Merah hanya untuk kondisi berlebih/error, hijau hanya untuk pemasukan/kondisi positif. Kontras teks dicek ≥ 4,5:1 di kedua mode.
+- Minim kartu & bayangan: bagian datar, garis pemisah tipis, daftar.
+
+## Data & privasi
+
+Semua data tersimpan di perangkat ini (AsyncStorage). Menghapus aplikasi = menghapus data, jadi buat **backup** berkala lewat Profil. Data dari versi sebelumnya otomatis terbaca.
+
 # save_fulus
